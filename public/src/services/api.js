@@ -1,10 +1,4 @@
 
-<<<<<<< HEAD
-=======
-
-
-// api.js - Corrected version
->>>>>>> e7b207bd6d0f65f6c2a76a98c37dffc696a26504
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://backend-21-2fu1.onrender.com';
 
 import axios from 'axios';
