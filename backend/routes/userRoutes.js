@@ -25,49 +25,66 @@ router.get('/', async (req, res) => {
 });
 
 
+// In your userRoutes.js or similar file
 router.post('/register', async (req, res) => {
+  const startTime = Date.now();
+  console.log('Registration started at:', new Date().toISOString());
+  
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, phone } = req.body;
+    console.log('Registration attempt:', { email });
     
     // Check if user already exists
+    console.log('Checking for existing user...');
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(409).json({ 
-        status: 'fail', 
-        message: 'User already exists with this email' 
-      });
+      console.log('User already exists:', email);
+      return res.status(400).json({ error: 'User already exists with this email' });
     }
     
     // Hash password
-    const saltRounds = 12;
+    console.log('Hashing password...');
+    const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     
     // Create user
-    const newUser = new User({
+    console.log('Creating user...');
+    const user = new User({
       name,
       email,
       password: hashedPassword,
-      role: role || 'customer'
+      phone,
+      role: 'customer'
     });
     
-    await newUser.save();
+    console.log('Saving user...');
+    await user.save();
     
-    res.status(201).json({
-      status: 'success',
-      message: 'User registered successfully',
-      user: {
-        id: newUser._id,
-        name: newUser.name,
-        email: newUser.email,
-        role: newUser.role
-      }
+    // Generate token
+    console.log('Generating token...');
+    const token = jwt.sign(
+      { id: user._id, email: user.email, role: user.role }, 
+      process.env.JWT_SECRET, 
+      { expiresIn: '7d' }
+    );
+    
+    const endTime = Date.now();
+    console.log('Registration completed in:', endTime - startTime, 'ms');
+    
+    res.status(201).json({ 
+      token, 
+      user: { 
+        id: user._id, 
+        email: user.email, 
+        name: user.name, 
+        role: user.role 
+      } 
     });
+    
   } catch (error) {
-    console.error('Registration error:', error);
-    res.status(500).json({
-      status: 'error',
-      message: 'Internal server error'
-    });
+    const endTime = Date.now();
+    console.error('Registration error after', endTime - startTime, 'ms:', error);
+    res.status(500).json({ error: 'Server error during registration' });
   }
 });
 

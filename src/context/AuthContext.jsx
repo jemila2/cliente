@@ -18,17 +18,13 @@ export function AuthProvider({ children }) {
   const [users, setUsers] = useState([]);
   const [usersLoading, setUsersLoading] = useState(false);
   
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://backend-21-2fu1.onrender.com';
-  const api = axios.create({
+const API_BASE_URL = 'https://backend-21-2fu1.onrender.com';
 
-    baseURL: `${API_BASE_URL}/api`, 
-
-    timeout: 10000,
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    }
-  });
+// Test the connection
+fetch(`${API_BASE_URL}/api/health`)
+  .then(response => response.json())
+  .then(data => console.log('Backend status:', data))
+  .catch(error => console.error('Connection failed:', error));
 
   // Enhanced interceptors
   api.interceptors.request.use((config) => {
