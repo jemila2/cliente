@@ -1,14 +1,14 @@
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://backend-21-2fu1.onrender.com';
+// export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://backend-21-2fu1.onrender.com';
 
 import axios from 'axios';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:10000';
 
 const api = axios.create({
   baseURL: `${API_BASE_URL}/api`,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json'
   }
 });
 
@@ -143,6 +143,53 @@ export const taskApi = {
     return response.data;
   }
 };
+
+
+
+
+// Add this function if it's missing
+export const getCustomers = async (params = {}) => {
+  try {
+    const response = await api.get('/customers', { params });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching customers:', error);
+    throw error;
+  }
+};
+
+// Make sure you're exporting all functions
+export const deleteCustomer = async (id) => {
+  try {
+    const response = await api.delete(`/customers/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting customer:', error);
+    throw error;
+  }
+};
+
+// Add other API functions you need
+export const createCustomer = async (customerData) => {
+  try {
+    const response = await api.post('/customers', customerData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating customer:', error);
+    throw error;
+  }
+};
+
+export const updateCustomer = async (id, customerData) => {
+  try {
+    const response = await api.put(`/customers/${id}`, customerData);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating customer:', error);
+    throw error;
+  }
+};
+
 
 export default api;
 
